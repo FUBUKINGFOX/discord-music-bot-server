@@ -5,7 +5,7 @@ import asyncio
 import discord
 from discord.ext import commands
 from bin import ctc ,source, ctt, token
-from bin.class_init import plugin_init
+from bin.class_init.plugin_init import plugin_init
 #===============app start
 argv = sys.argv[1:]
 arg_token = None
@@ -23,8 +23,8 @@ for opt, arg in opts:
 #=================
 
 Command_prefix = ["!"]
-listenner_port = ()
-intents = discord.Intents(value=137442520128)
+listenner_port = (960010374621581364)
+intents = discord.Intents.all()#(value=137442520128)
 bot = commands.Bot(command_prefix=Command_prefix, intents=intents ,help_command=None)
 
 #=================
@@ -87,18 +87,18 @@ async def reload(ctx, extension):
 @bot.event
 async def on_ready():
     os.system("cls")
-    ctc.printDarkSkyBlue("Discord Bot Server [版本 c.1.0.0]")
-    ctc.printBlue("[MIT License]Copyright (c) 2023 FUBUKINGFOX. 著作權所有，並保留一切權利。")
+    ctc.printDarkSkyBlue("Discord Bot Server [版本 c.1.0.0]\n")
+    ctc.printBlue("[MIT License]Copyright (c) 2023 FUBUKINGFOX. 著作權所有，並保留一切權利。\n")
     ctc.printGreen(u'Logged in as:\n'.format(bot))
     ctc.printPink(u'{0.user.name}\n'.format(bot))
     ctc.printYellowBlue(u'{0.user.id}\n'.format(bot))
     channel = bot.get_channel(listenner_port)
     await channel.send(":minidisc::{0.user.name}`{0.user.id}`".format(bot))
     ACT = discord.Activity(type=discord.ActivityType.playing, name="")
-    bot.change_presence(activity=ACT, status=discord.Status.online)
+    await bot.change_presence(activity=ACT, status=discord.Status.online)
 
 
-async def main(token: str):
+async def main(token):
     async with bot :
         await load_extensions()
         await load_error_handler()

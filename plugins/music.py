@@ -1,4 +1,3 @@
-
 #== encoding utf-8 ==
 import discord
 from discord.ext import commands
@@ -6,16 +5,14 @@ import asyncio
 import itertools
 import sys
 import time
-import os
 import traceback
 import configparser
 from async_timeout import timeout
 from functools import partial
 import youtube_dl
 from youtube_dl import YoutubeDL
-import threading
 #===============
-from bin import ctt, ctc, source,config_loader
+from bin import config_loader
 from bin.net import yt_url_exploer
 config = configparser.ConfigParser()
 config.read("./config/config.ini")

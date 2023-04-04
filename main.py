@@ -1,6 +1,7 @@
 import os
 import sys
 import getopt #input args
+import psutil
 import asyncio
 import discord
 from discord.ext import commands
@@ -28,7 +29,7 @@ intents = discord.Intents.all()#(value=137442520128)
 bot = commands.Bot(command_prefix=Command_prefix, intents=intents ,help_command=None)
 
 #=================
-ctc.printDarkGray(f"{ctt.time_now()} connecting to discord...")
+ctc.printDarkGray(f"{ctt.time_now()} connecting to discord...\n")
 #=================
 @bot.command(name="shutdown")
 async def shutdown(ctx :commands.Context):
@@ -38,16 +39,36 @@ async def shutdown(ctx :commands.Context):
 
 @bot.command(name="ping")
 async def ping(ctx :commands.Context):
-    await ctx.send()
+    #==========cpu, ram useage
+    # CPU usage
+    CPU_use = psutil.cpu_percent(interval=0.3)
+    # Memory usage
+    RAM_use = psutil.virtual_memory()[2]
+    #ping
+    ping = round(bot.latency*1000)
+    #==========embed_color
 
+    e_color = 0x59ff00
 
+    #==========
+    embed = (discord.Embed(title=u'🍵{0.user.name}'.format(bot),
+                               description=f'```ini\n[system/INFO]                                            \n```',
+                               color=e_color)
+                 .add_field(name='💠CPU usage', value=f"{CPU_use}%")
+                 .add_field(name='🧱RAM usage', value=f"{RAM_use}%")
+                 .add_field(name='📡ping', value=f"{ping}-ms")
+                 .set_author(icon_url="https://cdn.discordapp.com/emojis/1028895182290161746.webp", name=f"CORN Studio"))
+
+    await ctx.send(embed=embed)
+    
+    ctc.printYellow(f'{ctt.time_now()}:INFO:ping:[{ping}]-ms=>[{bot.latency*1000}]-us\n')
 #============================================================
 class commands_error_handler(plugin_init) :
     @commands.Cog.listener()
     async def on_command_error(self, ctx: commands.Context, error):
-        ctc.printRed(f"{ctt.time_now()}:ERROR:{error}")
         embed = discord.Embed(title="Command ERROR :", description=f"{error}", color=0xf6ff00)
         await ctx.reply(embed=embed)
+        ctc.printYellow(f"{ctt.time_now()}:ERROR:{error}")
 async def load_error_handler():
     await bot.add_cog(commands_error_handler(bot))
 

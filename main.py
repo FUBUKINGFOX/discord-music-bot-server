@@ -4,7 +4,7 @@ import getopt #input args
 import asyncio
 import discord
 from discord.ext import commands
-from bin import ctc ,source, ctt
+from bin import ctc ,source, ctt, token
 from bin.class_init import plugin_init
 #===============app start
 argv = sys.argv[1:]
@@ -32,6 +32,7 @@ ctc.printDarkGray(f"{ctt.time_now()} connecting to discord...")
 #=================
 @bot.command(name="shutdown")
 async def shutdown(ctx :commands.Context):
+    await bot.change_presence(status=discord.Status.invisible)
     await ctx.send(f"> {source.off_cv()}")
     await bot.close()
 
@@ -44,7 +45,8 @@ async def ping(ctx :commands.Context):
 class commands_error_handler(plugin_init) :
     @commands.Cog.listener()
     async def on_command_error(self, ctx: commands.Context, error):
-        embed = discord.Embed(title="<:SAD:1028588126291120219>Command ERROR :", description=f"{error}", color=0xf6ff00)
+        ctc.printRed(f"{ctt.time_now()}:ERROR:{error}")
+        embed = discord.Embed(title="Command ERROR :", description=f"{error}", color=0xf6ff00)
         await ctx.reply(embed=embed)
 async def load_error_handler():
     await bot.add_cog(commands_error_handler(bot))
@@ -103,4 +105,4 @@ async def main(token: str):
         await bot.start(token)
 
 if __name__ == "__main__" :
-    asyncio.run(main())
+    asyncio.run(main(token.token(arg_token)))

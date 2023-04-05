@@ -113,6 +113,11 @@ async def on_ready():
     ctc.printGreen(u'Logged in as:\n'.format(bot))
     ctc.printPink(u'{0.user.name}\n'.format(bot))
     ctc.printYellowBlue(u'{0.user.id}\n'.format(bot))
+    try :
+        slash_cmd = await bot.tree.sync()
+        print(f"upload {len(slash_cmd)} slash command(s)")
+    except Exception :
+        print("failed to upload slash command(s)")
     channel = bot.get_channel(listenner_port)
     await channel.send(":minidisc::{0.user.name}`{0.user.id}`".format(bot))
     ACT = discord.Activity(type=discord.ActivityType.playing, name="")

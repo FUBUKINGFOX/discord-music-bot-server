@@ -89,7 +89,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
 
 
         if creat_Queued_message == True :
-            embed = discord.Embed(title="", description=f"Queued [{data['title']}]({data['webpage_url']}) [{ctx.author.mention}]", color=0x73bbff)
+            embed = discord.Embed(title="", description=f"Queued [{data['title']}]({data['webpage_url']}) [{ctx.author.mention}]", color=0xff7ba5)
             await ctx.send(embed=embed)
 
         if download:
@@ -176,7 +176,7 @@ class MusicPlayer:
 
             self._guild.voice_client.play(source, after=lambda _: self.bot.loop.call_soon_threadsafe(self.next.set) )
 
-            e_color = 0x73d7ff ############__init
+            e_color = 0xff8cb1 ############__init
             song_type = None
 
             embed = (discord.Embed(title='Now playing',
@@ -290,7 +290,7 @@ class Music(commands.Cog):
             except asyncio.TimeoutError:
                 raise VoiceConnectionError(f'Connecting to channel: <{channel}> timed out.')
          
-        embed = discord.Embed(title=f"connectting to `{channel}` voice_channel...",color=0x73bbff)
+        embed = discord.Embed(title=f"connectting to `{channel}` voice_channel...",color=0xff739f)
         await ctx.send(embed=embed)
 
     @commands.command(name='play', aliases=['p','PLAY','P'], description="streams music")
@@ -323,12 +323,17 @@ class Music(commands.Cog):
             # If download is True, source will be a discord.FFmpegPCMAudio with a VolumeTransformer.
             if "youtube.com/playlist?list=" in search :
                 songs = yt_url_exploer.search(search)
-                embed = discord.Embed(title="正在載入歌單...", description=f"預計載入時間:{round(0.7*len(songs), 2)}sec(s)", color=0xf6ff00)
+                if len(songs) == 0 :
+                    embed = discord.Embed(color=0xfff200, title="[403]伺服器拒絕存取.")
+                    await ctx.reply(embed=embed)
+                    return
+                
+                embed = discord.Embed(title="正在載入歌單...", description=f"預計載入時間:{round(0.4*len(songs), 2)}sec(s)", color=0xf6ff00)
                 await ctx.send(embed=embed)
 
                 for song in songs :
                     source = await YTDLSource.create_source(ctx, song, loop=self.bot.loop, download=False, creat_Queued_message=False)
-                    await asyncio.sleep(0.5)
+                    await asyncio.sleep(0.25)
                     await player.queue.put(source)
                             
                 embed = discord.Embed(title="", description=f"已從歌單載入{len(songs)}首歌!", color=0xf6ff00)
@@ -491,7 +496,7 @@ class Music(commands.Cog):
         elif page <= total_len :
         
             q_start = page*10
-            e_color = 0x00eaff
+            e_color = 0xff8cb1
 
             # Grabs the songs in the queue...
             upcoming = list(itertools.islice(player.queue._queue, q_start, (q_start+10)))
@@ -531,13 +536,13 @@ class Music(commands.Cog):
 
         embed = (discord.Embed(title='Now playing',
                                description=f'```css\n{vc.source.title}\n```',
-                               color=0x73d7ff)
+                               color=0xff8cb1)
                  .add_field(name='Duration', value=duration)
                  .add_field(name='Requested by', value=vc.source.requester.mention)
                  .add_field(name='Uploader', value=f'[{vc.source.uploader}]({vc.source.uploader_url})')
                  .add_field(name='URL', value=f'[Click]({vc.source.web_url})')
                  .set_thumbnail(url=vc.source.thumbnail))
-        embed.set_author(icon_url=self.bot.user.avatar.url, name=f"CORN Studio _Music")
+        embed.set_author(icon_url="https://cdn.discordapp.com/emojis/1028895182290161746.webp", name=f"CORN Studio _Music")
         await ctx.send(embed=embed)
 
     @commands.command(name='volume', aliases=['vol', 'v'], description="changes Kermit's volume")

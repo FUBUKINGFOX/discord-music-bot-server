@@ -3,6 +3,7 @@ import sys
 import getopt #input args
 import psutil
 import asyncio
+import configparser
 import discord
 from discord.ext import commands
 from bin import ctc ,source, ctt, token
@@ -22,14 +23,14 @@ for opt, arg in opts:
       elif opt in ("-t", "--token"):
          arg_token = arg
 #=================
-
+config = configparser.ConfigParser()
+config.read("./config/config.ini")
 Command_prefix = ["!"]
-listenner_port = (960010374621581364)
+listenner_port = (config["client"].getint("listenner_port"))
 intents = discord.Intents.all()#(value=137442520128)
 bot = commands.Bot(command_prefix=Command_prefix, intents=intents ,help_command=None)
 
-#=================
-ctc.printDarkGray(f"{ctt.time_now()} connecting to discord...\n")
+
 #=================
 @bot.command(name="shutdown")
 async def shutdown(ctx :commands.Context):
@@ -116,9 +117,13 @@ async def on_ready():
     try :
         slash_cmd = await bot.tree.sync()
         print(f"upload {len(slash_cmd)} slash command(s)")
-    except Exception :
+    except Exception as error :
         print("failed to upload slash command(s)")
-    channel = bot.get_channel(listenner_port)
+        print(f"Exception:\n{error}")
+    try :
+        channel = bot.get_channel(listenner_port)
+    except Exception:
+        pass
     await channel.send(":minidisc::{0.user.name}`{0.user.id}`".format(bot))
     ACT = discord.Activity(type=discord.ActivityType.playing, name="")
     await bot.change_presence(activity=ACT, status=discord.Status.online)
@@ -131,4 +136,5 @@ async def main(token):
         await bot.start(token)
 
 if __name__ == "__main__" :
+    ctc.printDarkGray(f"{ctt.time_now()} connecting to discord...\n")
     asyncio.run(main(token.token(arg_token)))

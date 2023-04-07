@@ -6,7 +6,6 @@ import itertools
 import sys
 import time
 import traceback
-import configparser
 from async_timeout import timeout
 from functools import partial
 import youtube_dl
@@ -14,8 +13,7 @@ from youtube_dl import YoutubeDL
 #===============
 from bin import config_loader
 from bin.net import yt_url_exploer
-config = configparser.ConfigParser()
-config.read("./config/config.ini")
+from main import config
 enable_special_playchannel = config["music"].getboolean("enable_special_playchannel")
 playchannel = config_loader.load_playchannel()
 owner_id = [config["client"].getint("owner")]

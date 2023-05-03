@@ -28,7 +28,7 @@ config.read("./config/config.ini")
 Command_prefix = ["!"]
 listenner_port = (config["client"].getint("listenner_port"))
 intents = discord.Intents.all()#(value=137442520128)
-bot = commands.Bot(command_prefix=Command_prefix, intents=intents ,help_command=None)
+bot = commands.Bot(command_prefix=Command_prefix, intents=intents)
 
 
 #=================

@@ -137,7 +137,7 @@ class MusicPlayer:
     async def player_loop(self):
         """Our main player loop."""
         await self.bot.wait_until_ready()
-
+        
         while not self.bot.is_closed():
             self.next.clear()
 

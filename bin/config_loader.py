@@ -6,7 +6,7 @@ def load_playchannel() :
     playchannel = []
     with open(file = f"./config/{file_}", mode = "r", encoding = "utf-8") as id_ :
         for i in id_.readlines() :
-            playchannel.append(i.strip())
+            playchannel.append(int(i.strip()))
 
     ctc.printBlue(f"{file_} loaded...\n")
     print("channel_id:")

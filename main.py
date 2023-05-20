@@ -69,7 +69,7 @@ class commands_error_handler(plugin_init) :
     async def on_command_error(self, ctx: commands.Context, error):
         embed = discord.Embed(title="Command ERROR :", description=f"{error}", color=0xf6ff00)
         await ctx.reply(embed=embed)
-        ctc.printYellow(f"{ctt.time_now()}:ERROR:{error}")
+        ctc.printYellow(f"{ctt.time_now()}:ERROR:{error}\n")
 async def load_error_handler():
     await bot.add_cog(commands_error_handler(bot))
 

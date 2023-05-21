@@ -109,14 +109,14 @@ async def reload(ctx, extension):
 @bot.event
 async def on_ready():
     os.system("cls")
-    ctc.printDarkSkyBlue("Discord Bot Server [版本 c.1.0.0]\n")
-    ctc.printBlue("[MIT License]Copyright (c) 2023 FUBUKINGFOX. 著作權所有，並保留一切權利。\n")
+    ctc.printDarkSkyBlue("Discord Bot Server [版本 c.1.0.1]\n")
+    ctc.printBlue("Copyright (c) 2023 FUBUKINGFOX. 著作權所有，並保留一切權利。\n")
     ctc.printGreen(u'Logged in as:\n'.format(bot))
     ctc.printPink(u'{0.user.name}\n'.format(bot))
     ctc.printYellowBlue(u'{0.user.id}\n'.format(bot))
     try :
         slash_cmd = await bot.tree.sync()
-        print(f"upload {len(slash_cmd)} slash command(s)")
+        ctc.printBlue(f"{ctt.time_now()}:INFO :upload {len(slash_cmd)} slash command(s)\n")
     except Exception as error :
         print("failed to upload slash command(s)")
         print(f"Exception:\n{error}")

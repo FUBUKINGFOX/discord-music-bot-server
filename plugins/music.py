@@ -15,6 +15,7 @@ from bin import config_loader, queue_exploer
 from bin.net import yt_url_exploer
 from main import config
 enable_special_playchannel = config["music"].getboolean("enable_special_playchannel")
+enable_priorityqueue = config["music"].getboolean("enable_priorityqueue")
 playchannel = config_loader.load_playchannel()
 owner_id = [config["client"].getint("owner")]
 #===============
@@ -124,8 +125,10 @@ class MusicPlayer:
         self._guild = ctx.guild
         self._channel = ctx.channel
         self._cog = ctx.cog
-
-        self.queue = asyncio.PriorityQueue()
+        if enable_priorityqueue :
+            self.queue = asyncio.PriorityQueue()
+        else :
+            self.queue =asyncio.Queue()
         self.next = asyncio.Event()
 
         self.np = None  # Now playing message

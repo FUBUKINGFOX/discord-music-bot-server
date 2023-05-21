@@ -11,7 +11,7 @@ from functools import partial
 import youtube_dl
 from youtube_dl import YoutubeDL
 #===============
-from bin import config_loader
+from bin import config_loader, queue_exploer
 from bin.net import yt_url_exploer
 from main import config
 enable_special_playchannel = config["music"].getboolean("enable_special_playchannel")
@@ -125,7 +125,7 @@ class MusicPlayer:
         self._channel = ctx.channel
         self._cog = ctx.cog
 
-        self.queue = asyncio.Queue()
+        self.queue = asyncio.PriorityQueue()
         self.next = asyncio.Event()
 
         self.np = None  # Now playing message
@@ -144,7 +144,7 @@ class MusicPlayer:
             try:
                 # Wait for the next song. If we timeout cancel the player and disconnect...
                 async with timeout(300):  # 5 minutes...
-                    source_ = await self.queue.get()
+                    source_ = (await self.queue.get()).item
             except asyncio.TimeoutError:
                 return self.destroy(self._guild)
 
@@ -254,6 +254,18 @@ class Music(commands.Cog):
             self.players[ctx.guild.id] = player
 
         return player
+    
+
+    class Prioritize:
+        def __init__(self, priority, item):
+            self.priority = priority
+            self.item = item
+
+        def __eq__(self, other):
+            return self.priority == other.priority
+
+        def __lt__(self, other):
+            return self.priority < other.priority
 
     @commands.command(name='connect', aliases=['join','c'], description="connects to voice channel")
     async def connect_(self, ctx, *, channel: discord.VoiceChannel=None):
@@ -332,7 +344,7 @@ class Music(commands.Cog):
                 for song in songs :
                     source = await YTDLSource.create_source(ctx, song, loop=self.bot.loop, download=False, creat_Queued_message=False)
                     await asyncio.sleep(0.25)
-                    await player.queue.put(source)
+                    await player.queue.put(self.Prioritize(2,source))
                             
                 embed = discord.Embed(title="", description=f"已從歌單載入{len(songs)}首歌!", color=0xf6ff00)
                 await ctx.send(embed=embed)
@@ -341,7 +353,7 @@ class Music(commands.Cog):
             else :
                 source = await YTDLSource.create_source(ctx, search, loop=self.bot.loop, download=False, creat_Queued_message=True)
                 if source != False :
-                    await player.queue.put(source)
+                    await player.queue.put(self.Prioritize(1,source))
         else :
             embed = discord.Embed(title="", description="Please request a song on the designated channel.", color=0xf6ff00)
             await ctx.send(embed=embed)
@@ -437,7 +449,7 @@ class Music(commands.Cog):
             player.queue._queue.pop()
         else:
             try:
-                s = player.queue._queue[pos-1]
+                s = (player.queue._queue[pos-1]).item
                 del player.queue._queue[pos-1]
                 embed = discord.Embed(title="", description=f"Removed [{s['title']}]({s['webpage_url']}) [{s['requester'].mention}]", color=0xf200ff)
                 await ctx.send(embed=embed)
@@ -497,7 +509,7 @@ class Music(commands.Cog):
             e_color = 0xff8cb1
 
             # Grabs the songs in the queue...
-            upcoming = list(itertools.islice(player.queue._queue, q_start, (q_start+10)))
+            upcoming = list(itertools.islice(queue_exploer.queue_expr(player.queue._queue), q_start, (q_start+10)))
             fmt = '\n'.join(f"`{(upcoming.index(_)) + 1 + q_start}.` [{_['title']}]({_['webpage_url']}) | `Requested by: {_['requester']}`\n" for _ in upcoming)
             fmt = f"\n__Now Playing__:\n[{vc.source.title}]({vc.source.web_url}) | ` {duration} Requested by: {vc.source.requester}`\n\n__Up Next:__\n" + fmt +f"\n**{len(player.queue._queue)} songs in queue**"
             embed = discord.Embed(title=f'Queue for {ctx.guild.name}', description=fmt, color=e_color)
